@@ -1,0 +1,393 @@
+schema_version: '2.2'
+profile_id: builtin::dimeric_groove
+profile_provenance:
+  supersedes_profile_id: dimeric_groove_8FTG_v3
+  source_yaml: dimeric_groove_8FTG_v3.yml
+  status: active_built_in_profile
+built_in_profile:
+  is_built_in: true
+  built_in_key: dimeric_groove
+  display_name: Dimeric groove
+  ui_group: Small-molecule VHH framework profiles
+  ui_order: 5
+  selectable_in_ui: true
+  default_pipeline: rfd3_ligandmpnn_rf3
+  supported_pipelines:
+    rfd3_ligandmpnn_rf3: true
+    rfantibody_branch: false
+title: dimeric_groove / symmetric inter-protomer clamp mode (8FTG caffeine exemplar)
+mode_family: small_molecule_vhh
+mode_subtype: dimeric_groove
+numbering:
+  executable_scheme: pdb_author
+  canonical_annotation_scheme: IMGT
+  rfantibody_export_scheme: null
+  selections_are_encoded_in: pdb_author
+  residue_maps_embedded: false
+  mapping_strategy:
+    status: maps_not_embedded
+    reason: Exact IMGT/Chothia residue maps should be generated from the cleaned framework sequence; storing guessed maps inside the built-in YAML would be unsafe.
+    generate_from_cleaned_framework_pdb: dimeric_groove_framework_v1.pdb
+    tools_in_preference_order:
+    - ANARCI
+    - AbNumber
+    store_generated_maps_next_to_profile: true
+    recommended_output_files:
+      imgt_map_yaml: dimeric_groove_8FTG_imgt_map.yml
+      chothia_map_yaml: null
+    selection_policy: All explicit residue selections in this YAML remain in executable_scheme until converted by a mapping-aware parser.
+selection_conventions:
+  atomistic_jobs_read: pdb_author residue ids from cleaned PDB inputs
+  human_annotation_prefers: IMGT once a residue map has been generated
+  rfantibody_branch_reads: not_applicable
+oligomeric_state: homodimer
+template_choice_rationale: Representative exemplar for an obligate homodimer groove because 8FTG directly shows a ligand recognition mode that only exists when two VHH protomers cooperate to form a shared binding cleft. In v3 the exemplar remains a geometry anchor while the runtime profile stays explicitly dimer-only.
+template_files:
+  original_holo_pdb: dimeric_groove_8FTG_original_holo.pdb
+  original_apo_pdb: null
+  cleaned_holo_reference_pdb: dimeric_groove_8FTG_holo_ref_HJ.pdb
+  cleaned_framework_pdb: dimeric_groove_framework_v1.pdb
+  cleaned_pseudo_apo_pdb: dimeric_groove_8FTG_pseudo_apo_HJ.pdb
+integration_contract:
+  profile_selector_value: dimeric_groove
+  framework_pdb_for_rfd3_rf3: dimeric_groove_framework_v1.pdb
+  holo_reference_pdb_for_rf3: dimeric_groove_8FTG_holo_ref_HJ.pdb
+  framework_pdb_for_rfantibody_preconversion: null
+  requires_profile_parser: true
+  requires_mapping_engine_for_rfantibody: false
+  requires_mapping_engine_for_imgt_exports: true
+protein_chain_ids:
+- H
+- J
+ligand:
+  resname: CFF
+  pdb_resseq: 201
+  pocket_center_xyz_from_holo:
+  - 17.097
+  - 33.927
+  - -6.494
+  ligand_principal_axis_from_holo:
+  - 0.13318
+  - -0.7945
+  - -0.59248
+ligand_contract:
+  source_of_truth:
+    explicit_h_required: true
+    preserve_internal_geometry: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    preserve_protomer_tautomer_identity: true
+  model_view:
+    generate_per_stage: true
+    persistent_artifact: false
+    derive_from_source_of_truth: true
+    drop_explicit_hydrogens: true
+    preserve_bond_order: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    residue_naming_policy: guaranteed_non_conflicting_custom_component
+    preferred_residue_namespace: L:0
+    atom_names_must_be_stable: true
+    require_truth_atom_map: true
+  reference_holo_usage:
+    allowed_uses:
+    - pocket_frame_definition
+    - rf3_template_context
+    - rf3_ground_truth_conformer_reference
+    forbidden_uses:
+    - target_working_ligand_substitution
+    - analog_working_ligand_substitution
+    - decoy_working_ligand_substitution
+    - final_export_complex_ligand
+stage_policy:
+  default_selectivity_mode: broad_specificity
+  rfd3:
+    primary_states:
+    - target_holo
+    - apo
+    analog_policy: soft_reference_only
+    decoy_policy: exclude_from_generation
+    conditioning_strength: symmetric_planar_clamp
+  ligand_mpnn:
+    primary_state: target_holo
+    analog_decoy_policy: exclude_from_sequence_recovery
+  rf3:
+    default_path: direct_complex
+    target_role: reward
+    apo_role: constraint
+    analog_role: shared_reward
+    decoy_role: strong_penalty
+  one_shot_refine:
+    target_role: rescue_target_favorable_designs_only
+    analog_decoy_role: rerank_refine_candidates_not_primary_generation
+region_policy:
+  hard_fixed_core:
+    selection:
+    - H:2-33
+    - H:36-100
+    - H:107-121
+    - J:3-33
+    - J:36-100
+    - J:107-119
+    rationale: Keep the domain core and distal framework fixed during early-stage design.
+  semi_movable_shell:
+    selection:
+    - H:35
+    - H:106
+    - J:35
+    - J:106
+    rationale: Allow local backbone/sidechain accommodation during RFD3/RF3 but avoid unrestricted sequence redesign unless needed.
+  designable_contact_layer:
+    selection:
+    - H:34
+    - H:101-105
+    - J:34
+    - J:101-105
+    rationale: Primary ligand-contact layer for LigandMPNN or constrained sidechain redesign.
+  preserve_positions:
+  - H:23
+  - H:94
+  - J:23
+  - J:94
+pocket_segments:
+  wall_A:
+  - H:34
+  - H:101-106
+  wall_B:
+  - J:34
+  - J:101-106
+  interface_rim:
+  - H:30-36
+  - J:30-36
+contact_grammar:
+  required_features:
+  - name: obligate_homodimer
+    hardness: hard
+    description: Two VHH protomers are required to assemble the groove.
+    allowed_positions:
+    - H:*
+    - J:*
+  - name: symmetric_interprotomer_walls
+    hardness: hard
+    description: Opposing walls from both protomers must define the clamp.
+    allowed_positions:
+    - H:34
+    - H:104
+    - J:34
+    - J:104
+  - name: interface_rim_caps
+    hardness: hard
+    description: Both protomers should provide rim/cap residues that keep the ligand at the interface rather than in a single-chain cavity.
+    allowed_positions:
+    - H:101-106
+    - J:101-106
+  - name: planar_interprotomer_clamp
+    hardness: hard
+    description: The pose should remain compatible with a clamp assembled across the dimer interface.
+    allowed_positions:
+    - H:30-36
+    - J:30-36
+    - H:101-106
+    - J:101-106
+  - name: water_or_polar_hooks
+    hardness: soft
+    description: Optional water-mediated or polar hooks can help stabilize heteroatom-bearing ligands.
+    allowed_positions:
+    - H:101-106
+    - J:101-106
+  negative_constraints:
+  - forbid_monomer_only_scoring
+  - forbid_unsymmetrical_interface_if_symmetry_design
+  - forbid_deep_single_chain_cavity
+  - forbid_tunnel_like_shaft
+  - prefer_planar_interprotomer_pose
+  burial_target_range:
+  - 0.45
+  - 0.82
+  tied_symmetry_groups:
+  - - H:34
+    - J:34
+  - - H:101
+    - J:101
+  - - H:102
+    - J:102
+  - - H:103
+    - J:103
+  - - H:104
+    - J:104
+  - - H:105
+    - J:105
+  - - H:106
+    - J:106
+workflow_hints:
+  rfd3:
+    template_backbone_selection:
+    - H:2-33
+    - H:35-100
+    - H:106-121
+    - J:3-33
+    - J:35-100
+    - J:106-119
+    allow_backbone_perturbation_selection:
+    - H:34-35
+    - H:101-106
+    - J:34-35
+    - J:101-106
+    primary_contact_design_selection:
+    - H:34
+    - H:101-105
+    - J:34
+    - J:101-105
+    notes: 'Preserve a symmetric inter-protomer clamp: keep both chains engaged and do not let the ligand collapse into a monomer-only pocket. Keep template selections in pdb_author numbering.'
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    template_ligand_usage: reference_frame_only
+    hydrogen_conditioning_mode: water_bridge_optional
+    donor_acceptor_priority:
+      preferred_interface_caps:
+      - H:101-106
+      - J:101-106
+  ligand_mpnn:
+    design_positions:
+    - H:34
+    - H:101-105
+    - J:34
+    - J:101-105
+    optional_context_positions:
+    - H:35
+    - H:106
+    - J:35
+    - J:106
+    fixed_positions:
+    - H:2-33
+    - H:36-100
+    - H:107-121
+    - J:3-33
+    - J:36-100
+    - J:107-119
+    notes: 'Use pdb_author residue ids exactly as stored in the cleaned framework PDB. First pass: design contact layer only. Second pass, if needed, release selected semi-movable shell positions.'
+    selection_numbering: pdb_author
+  rf3:
+    template_selection:
+    - H:2-33
+    - H:35-100
+    - H:106-121
+    - J:3-33
+    - J:35-100
+    - J:106-119
+    ligand_reference_pdb: dimeric_groove_8FTG_holo_ref_HJ.pdb
+    ground_truth_conformer_selection: CFF
+    notes: Use the cleaned holo reference to provide the ligand conformer. Keep all template selections in pdb_author numbering.
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    complex_input_mode: direct_complex_preferred
+    fallback_mode: protein_only_then_truth_ligand_backprojection
+    sanity_gate:
+      drop_failed_designs: true
+      fail_job_only_if_all_designs_drop: true
+      thresholds:
+        internal_conformer_rmsd: 1.0
+        ligand_drift_rmsd: 4.0
+        min_protein_ligand_distance: 6.0
+        contact_count_within_5A: 3
+        min_contacts_with_wall_A: 2
+        min_contacts_with_wall_B: 2
+        ligand_centroid_drift_A: 4.0
+      metric_policies:
+        internal_conformer_rmsd: warn
+        ligand_drift_rmsd: warn
+        min_protein_ligand_distance: drop
+        contact_count_within_5A: drop
+        min_contacts_with_wall_A: drop_if_below
+        min_contacts_with_wall_B: drop_if_below
+        ligand_centroid_drift_A: warn
+      state_policies:
+        target: drop
+        analog: warn
+        decoy: warn
+        apo: ignore
+      segment_contact_sets:
+        wall_A:
+        - H:34
+        - H:101-106
+        wall_B:
+        - J:34
+        - J:101-106
+        interface_rim:
+        - H:30-36
+        - J:30-36
+  rfantibody:
+    supported: false
+    requires_chothia_hlt_conversion: false
+    notes: Not supported for this profile.
+    input_numbering_required: Chothia_annotated_PDB
+    source_framework_before_conversion: dimeric_groove_8FTG_framework_HJ.pdb
+notes: 'V4 topology-first interpretation: use this profile only when the ligand should be clamped between two cooperating VHH protomers at a shared interface groove. The defining topology is a symmetric inter-protomer clamp, not a single-chain deep cavity or tunnel.'
+topology:
+  topology_class: dimeric_groove
+  topology_subtype: symmetric_interprotomer_clamp
+  openness_model:
+    open_faces_expected_min: 1
+    open_faces_expected_max: 2
+    side_open_allowed: false
+    roof_or_lid_required: false
+    backwall_required: false
+    symmetry_required: true
+  anisotropy_model:
+    elongated_axis_required: false
+    radial_enclosure_required: false
+    surface_parallel_pose_preferred: true
+    inter_sheet_slit_required: false
+  required_segments:
+  - wall_A
+  - wall_B
+  - interface_rim
+  - cap_A
+  - cap_B
+  role_segments:
+    wall_A:
+    - H:34
+    - H:101-106
+    wall_B:
+    - J:34
+    - J:101-106
+    interface_rim:
+    - H:30-36
+    - J:30-36
+    cap_A:
+    - H:101-106
+    cap_B:
+    - J:101-106
+  required_structural_roles:
+  - wall_A
+  - wall_B
+  - interface_rim
+  - cap_A
+  - cap_B
+  canonical_pose_description: Ligand is clamped at the shared H/J protomer interface by two opposing walls rather than residing in a monomer-only pocket.
+filter_grammar:
+  primary_decision_axis: retain_symmetric_interprotomer_clamp
+  metric_semantics:
+    min_protein_ligand_distance: drop_if_above
+    contact_count_within_5A: drop_if_below
+    min_contacts_with_wall_A: drop_if_below
+    min_contacts_with_wall_B: drop_if_below
+    ligand_centroid_drift_A: drop_if_above
+  hard_filters:
+  - name: retain_dual_chain_contacts_A
+    metric: min_contacts_with_wall_A
+    threshold: 2
+  - name: retain_dual_chain_contacts_B
+    metric: min_contacts_with_wall_B
+    threshold: 2
+  soft_rankers:
+  - name: prefer_balanced_interface_contacts
+    metric: contact_count_within_5A
+    direction: higher_is_better
+  - name: prefer_lower_centroid_drift
+    metric: ligand_centroid_drift_A
+    direction: lower_is_better
+  reject_patterns:
+  - monomer_only_pose
+  - deep_single_chain_cavity_pose
+  - tunnel_like_interface_pose

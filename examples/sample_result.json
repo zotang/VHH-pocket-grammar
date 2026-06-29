@@ -1,0 +1,22 @@
+[
+  {
+    "built_in_key": "deep_cavity",
+    "display_name": "Deep cavity",
+    "mode_subtype": "deep_cavity",
+    "oligomeric_state": "monomer",
+    "ligand_resname": "CLM",
+    "topology_class": "deep_cavity",
+    "framework_pdb": "deep_cavity_framework_v1.pdb",
+    "holo_reference_pdb": "deep_cavity_7TJC_holo_ref_H.pdb"
+  },
+  {
+    "built_in_key": "lateral_groove",
+    "display_name": "Lateral groove",
+    "mode_subtype": "lateral_groove",
+    "oligomeric_state": "monomer",
+    "ligand_resname": "RR1",
+    "topology_class": "lateral_groove",
+    "framework_pdb": "lateral_groove_framework_v1.pdb",
+    "holo_reference_pdb": "lateral_groove_1I3U_holo_ref_H.pdb"
+  }
+]

@@ -1,0 +1,12 @@
+profile_keys:
+  - deep_cavity
+  - lateral_groove
+fields:
+  - built_in_key
+  - display_name
+  - mode_subtype
+  - oligomeric_state
+  - ligand_resname
+  - topology_class
+  - framework_pdb
+  - holo_reference_pdb

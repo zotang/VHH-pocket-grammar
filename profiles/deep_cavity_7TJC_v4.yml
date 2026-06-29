@@ -1,0 +1,432 @@
+schema_version: '2.2'
+profile_id: builtin::deep_cavity
+profile_provenance:
+  supersedes_profile_id: deep_cavity_7TJC_v3
+  source_yaml: deep_cavity_7TJC_v3.yml
+  status: active_built_in_profile
+built_in_profile:
+  is_built_in: true
+  built_in_key: deep_cavity
+  display_name: Deep cavity
+  ui_group: Small-molecule VHH framework profiles
+  ui_order: 1
+  selectable_in_ui: true
+  default_pipeline: rfd3_ligandmpnn_rf3
+  supported_pipelines:
+    rfd3_ligandmpnn_rf3: true
+    rfantibody_branch: true
+title: deep_cavity / capped buried-cavity mode (7TJC Chl-B2 exemplar)
+mode_family: small_molecule_vhh
+mode_subtype: deep_cavity
+numbering:
+  executable_scheme: pdb_author
+  canonical_annotation_scheme: IMGT
+  rfantibody_export_scheme: Chothia
+  selections_are_encoded_in: pdb_author
+  residue_maps_embedded: false
+  mapping_strategy:
+    status: maps_not_embedded
+    reason: Exact IMGT/Chothia residue maps should be generated from the cleaned framework sequence; storing guessed maps inside the built-in YAML would be unsafe.
+    generate_from_cleaned_framework_pdb: deep_cavity_framework_v1.pdb
+    tools_in_preference_order:
+    - ANARCI
+    - AbNumber
+    store_generated_maps_next_to_profile: true
+    recommended_output_files:
+      imgt_map_yaml: deep_cavity_7TJC_imgt_map.yml
+      chothia_map_yaml: deep_cavity_7TJC_chothia_map.yml
+    selection_policy: All explicit residue selections in this YAML remain in executable_scheme until converted by a mapping-aware parser.
+selection_conventions:
+  atomistic_jobs_read: pdb_author residue ids from cleaned PDB inputs
+  human_annotation_prefers: IMGT once a residue map has been generated
+  rfantibody_branch_reads: Chothia-numbered PDB followed by HLT conversion
+oligomeric_state: monomer
+template_choice_rationale: Representative exemplar for a buried small-molecule cavity because the 1.35 A holo structure 7TJC (Chl-B2) shows a tight three-CDR pocket with a CDR3 lid over a CDR1/CDR2 floor. In v3 the exemplar still defines the geometry class, but the runtime constraints are tightened to preserve high burial and a stabilizing lid-lock rather than over-generalizing this mode.
+template_files:
+  original_holo_pdb: deep_cavity_7TJC_original_holo.pdb
+  original_apo_pdb: null
+  cleaned_holo_reference_pdb: deep_cavity_7TJC_holo_ref_H.pdb
+  cleaned_framework_pdb: deep_cavity_framework_v1.pdb
+  cleaned_pseudo_apo_pdb: deep_cavity_7TJC_pseudo_apo_H.pdb
+integration_contract:
+  profile_selector_value: deep_cavity
+  framework_pdb_for_rfd3_rf3: deep_cavity_framework_v1.pdb
+  holo_reference_pdb_for_rf3: deep_cavity_7TJC_holo_ref_H.pdb
+  framework_pdb_for_rfantibody_preconversion: deep_cavity_framework_v1.pdb
+  requires_profile_parser: true
+  requires_mapping_engine_for_rfantibody: true
+  requires_mapping_engine_for_imgt_exports: true
+protein_chain_ids:
+- H
+ligand:
+  resname: CLM
+  pdb_resseq: 201
+  pocket_center_xyz_from_holo:
+  - 19.168
+  - 24.501
+  - 13.446
+  ligand_principal_axis_from_holo:
+  - 0.04562
+  - -0.96879
+  - 0.24366
+ligand_contract:
+  source_of_truth:
+    explicit_h_required: true
+    preserve_internal_geometry: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    preserve_protomer_tautomer_identity: true
+  model_view:
+    generate_per_stage: true
+    persistent_artifact: false
+    derive_from_source_of_truth: true
+    drop_explicit_hydrogens: true
+    preserve_bond_order: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    residue_naming_policy: guaranteed_non_conflicting_custom_component
+    preferred_residue_namespace: L:0
+    atom_names_must_be_stable: true
+    require_truth_atom_map: true
+  reference_holo_usage:
+    allowed_uses:
+    - pocket_frame_definition
+    - rf3_template_context
+    - rf3_ground_truth_conformer_reference
+    forbidden_uses:
+    - target_working_ligand_substitution
+    - analog_working_ligand_substitution
+    - decoy_working_ligand_substitution
+    - final_export_complex_ligand
+stage_policy:
+  default_selectivity_mode: target_specific
+  rfd3:
+    primary_states:
+    - target_holo
+    - apo
+    analog_policy: soft_reference_only
+    decoy_policy: exclude_from_generation
+    conditioning_strength: strong_polar_anchor
+  ligand_mpnn:
+    primary_state: target_holo
+    analog_decoy_policy: exclude_from_sequence_recovery
+  rf3:
+    default_path: direct_complex
+    target_role: reward
+    apo_role: constraint
+    analog_role: medium_penalty
+    decoy_role: strong_penalty
+  one_shot_refine:
+    target_role: rescue_target_favorable_designs_only
+    analog_decoy_role: rerank_refine_candidates_not_primary_generation
+region_policy:
+  hard_fixed_core:
+    selection:
+    - H:2-31
+    - H:38-46
+    - H:48
+    - H:54-56
+    - H:60-95
+    - H:101-103
+    - H:112
+    - H:114-124
+    rationale: Keep the domain core and distal framework fixed during early-stage design.
+  semi_movable_shell:
+    selection:
+    - H:32
+    - H:36
+    - H:49
+    - H:53
+    - H:58
+    - H:96
+    - H:100
+    - H:110
+    - H:113
+    rationale: Allow local backbone/sidechain accommodation during RFD3/RF3 but avoid unrestricted sequence redesign unless needed.
+  designable_contact_layer:
+    selection:
+    - H:33-35
+    - H:37
+    - H:47
+    - H:50-52
+    - H:57
+    - H:59
+    - H:97-99
+    - H:104-109
+    - H:111
+    rationale: Primary ligand-contact layer for LigandMPNN or constrained sidechain redesign.
+  preserve_positions:
+  - H:23
+  - H:94
+  - H:99
+  - H:107
+  - H:109
+pocket_segments:
+  entrance:
+  - H:33-37
+  - H:47-52
+  middle:
+  - H:57-59
+  - H:97-99
+  bottom:
+  - H:105-109
+contact_grammar:
+  required_features:
+  - name: cavity_floor
+    hardness: hard
+    description: A true cavity floor must support the ligand from below rather than leaving a groove-like through path.
+    allowed_positions:
+    - H:57-59
+    - H:105-109
+  - name: radial_enclosure
+    hardness: hard
+    description: The ligand should be enclosed on multiple sides by convergent walls instead of by a single exposed face.
+    allowed_positions:
+    - H:33-37
+    - H:47-52
+    - H:57-59
+    - H:97-111
+  - name: buried_bottom_cluster
+    hardness: hard
+    description: A buried bottom-stop cluster must terminate the cavity at depth.
+    allowed_positions:
+    - H:105-109
+  - name: cdr3_lid
+    hardness: hard
+    description: CDR3 acts as the top wall or lid over the buried cavity.
+    allowed_positions:
+    - H:97-111
+  - name: lid_lock_cluster
+    hardness: hard
+    description: At least one cross-loop stabilizing lock should keep the lid in a capped configuration.
+    allowed_positions:
+    - H:99
+    - H:107-109
+  - name: buried_anchor
+    hardness: soft
+    description: Optional polar or aromatic-polar anchor near the cavity floor or lid hinge.
+    allowed_positions:
+    - H:99
+    - H:105-109
+  negative_constraints:
+  - forbid_open_side_leak
+  - forbid_shallow_surface_pose
+  - forbid_surface_parallel_pose
+  - forbid_long_tunnel_axis
+  - forbid_lateral_groove_like_open_face
+  - prefer_high_burial
+  burial_target_range:
+  - 0.64
+  - 0.93
+workflow_hints:
+  rfd3:
+    template_backbone_selection:
+    - H:2-32
+    - H:36
+    - H:38-46
+    - H:48-49
+    - H:53-56
+    - H:58
+    - H:60-96
+    - H:100-103
+    - H:110
+    - H:112-124
+    allow_backbone_perturbation_selection:
+    - H:32-37
+    - H:47
+    - H:49-53
+    - H:57-59
+    - H:96-100
+    - H:104-111
+    - H:113
+    primary_contact_design_selection:
+    - H:33-35
+    - H:37
+    - H:47
+    - H:50-52
+    - H:57
+    - H:59
+    - H:97-99
+    - H:104-109
+    - H:111
+    notes: 'Preserve a capped deep cavity: radial enclosure and lid continuity matter more than shaft elongation. Keep template selections in pdb_author numbering.'
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    template_ligand_usage: reference_frame_only
+    hydrogen_conditioning_mode: deep_anchor_required
+    donor_acceptor_priority:
+      preferred_bottom_anchor_atoms:
+      - O
+      - N
+      preferred_bottom_anchor_segment:
+      - H:99
+      - H:105-109
+  ligand_mpnn:
+    design_positions:
+    - H:33-35
+    - H:37
+    - H:47
+    - H:50-52
+    - H:57
+    - H:59
+    - H:97-99
+    - H:104-109
+    - H:111
+    optional_context_positions:
+    - H:32
+    - H:36
+    - H:49
+    - H:53
+    - H:58
+    - H:96
+    - H:100
+    - H:110
+    - H:113
+    fixed_positions:
+    - H:2-31
+    - H:38-46
+    - H:48
+    - H:54-56
+    - H:60-95
+    - H:101-103
+    - H:112
+    - H:114-124
+    notes: 'Use pdb_author residue ids exactly as stored in the cleaned framework PDB. First pass: design contact layer only. Second pass, if needed, release selected semi-movable shell positions.'
+    selection_numbering: pdb_author
+  rf3:
+    template_selection:
+    - H:2-32
+    - H:36
+    - H:38-46
+    - H:48-49
+    - H:53-56
+    - H:58
+    - H:60-96
+    - H:100-103
+    - H:110
+    - H:112-124
+    ligand_reference_pdb: deep_cavity_7TJC_holo_ref_H.pdb
+    ground_truth_conformer_selection: CLM
+    notes: Use the cleaned holo reference to provide the ligand conformer. Keep all template selections in pdb_author numbering.
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    complex_input_mode: direct_complex_preferred
+    fallback_mode: protein_only_then_truth_ligand_backprojection
+    sanity_gate:
+      drop_failed_designs: true
+      fail_job_only_if_all_designs_drop: true
+      thresholds:
+        internal_conformer_rmsd: 1.0
+        ligand_drift_rmsd: 4.0
+        min_protein_ligand_distance: 5.5
+        contact_count_within_5A: 4
+        ligand_centroid_drift_A: 3.5
+        ligand_buried_fraction_min: 0.72
+        min_contacts_with_lid: 2
+        min_contacts_with_bottom_cluster: 2
+      metric_policies:
+        internal_conformer_rmsd: warn
+        ligand_drift_rmsd: warn
+        min_protein_ligand_distance: drop
+        contact_count_within_5A: drop
+        ligand_centroid_drift_A: drop
+        ligand_buried_fraction_min: drop_if_below
+        min_contacts_with_lid: drop_if_below
+        min_contacts_with_bottom_cluster: drop_if_below
+      state_policies:
+        target: drop
+        analog: warn
+        decoy: warn
+        apo: ignore
+      segment_contact_sets:
+        lid:
+        - H:97-111
+        bottom_cluster:
+        - H:105-109
+        enclosure_walls:
+        - H:33-37
+        - H:47-52
+        - H:57-59
+        - H:97-111
+  rfantibody:
+    supported: true
+    requires_chothia_hlt_conversion: true
+    notes: Generate an on-demand Chothia map from the cleaned framework PDB, emit a Chothia-numbered framework PDB, and then convert it to HLT remarks for RFantibody. Do not reinterpret pdb_author selections as Chothia without an explicit mapping step.
+    input_numbering_required: Chothia_annotated_PDB
+    source_framework_before_conversion: deep_cavity_framework_v1.pdb
+notes: 'V4 topology-first interpretation: use this profile when the target ligand should occupy a genuinely capped and radially enclosed buried cavity, not a side-open groove or an elongated tunnel. The exemplar 7TJC structure remains the geometric source, but runtime ranking now prioritizes retained lid closure, buried bottom-stop geometry, and high enclosure around the ligand centroid.'
+topology:
+  topology_class: deep_cavity
+  topology_subtype: capped_buried_cavity
+  openness_model:
+    open_faces_expected_max: 1
+    side_open_allowed: false
+    roof_or_lid_required: true
+    backwall_required: false
+  anisotropy_model:
+    elongated_axis_required: false
+    radial_enclosure_required: true
+    surface_parallel_pose_preferred: false
+    inter_sheet_slit_required: false
+  required_segments:
+  - neck
+  - enclosure_walls
+  - cavity_floor
+  - buried_bottom_cluster
+  - lid
+  - lid_lock_cluster
+  role_segments:
+    neck:
+    - H:33-37
+    - H:47-52
+    enclosure_walls:
+    - H:33-37
+    - H:47-52
+    - H:57-59
+    - H:97-111
+    cavity_floor:
+    - H:57-59
+    buried_bottom_cluster:
+    - H:105-109
+    lid:
+    - H:97-111
+    lid_lock_cluster:
+    - H:99
+    - H:107-109
+  required_structural_roles:
+  - cavity_floor
+  - enclosure_walls
+  - buried_bottom_cluster
+  - lid
+  - lid_lock_cluster
+  canonical_pose_description: Ligand sits beneath a CDR3-derived lid in a radially enclosed buried bowl rather than extending through a long shaft or remaining side exposed.
+filter_grammar:
+  primary_decision_axis: retain_capped_buried_topology
+  metric_semantics:
+    min_protein_ligand_distance: drop_if_above
+    contact_count_within_5A: drop_if_below
+    ligand_buried_fraction_min: drop_if_below
+    ligand_centroid_drift_A: drop_if_above
+    min_contacts_with_lid: drop_if_below
+    min_contacts_with_bottom_cluster: drop_if_below
+  hard_filters:
+  - name: retain_high_burial
+    metric: ligand_buried_fraction_min
+    threshold: 0.72
+  - name: retain_lid_contacts
+    metric: min_contacts_with_lid
+    threshold: 2
+  - name: retain_bottom_cluster_contacts
+    metric: min_contacts_with_bottom_cluster
+    threshold: 2
+  soft_rankers:
+  - name: prefer_stronger_enclosure
+    metric: contact_count_within_5A
+    direction: higher_is_better
+  - name: prefer_lower_centroid_drift
+    metric: ligand_centroid_drift_A
+    direction: lower_is_better
+  reject_patterns:
+  - surface_parallel_pose
+  - open_side_escape
+  - tunnel_like_through_path

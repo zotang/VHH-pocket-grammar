@@ -1,0 +1,396 @@
+schema_version: '2.2'
+profile_id: builtin::lateral_groove
+profile_provenance:
+  supersedes_profile_id: lateral_groove_1I3U_1I3V_v3
+  source_yaml: lateral_groove_1I3U_1I3V_v3.yml
+  status: active_built_in_profile
+built_in_profile:
+  is_built_in: true
+  built_in_key: lateral_groove
+  display_name: Lateral groove
+  ui_group: Small-molecule VHH framework profiles
+  ui_order: 2
+  selectable_in_ui: true
+  default_pipeline: rfd3_ligandmpnn_rf3
+  supported_pipelines:
+    rfd3_ligandmpnn_rf3: true
+    rfantibody_branch: true
+title: lateral_groove / side-open surface-groove mode (1I3U/1I3V RR1 exemplar)
+mode_family: small_molecule_vhh
+mode_subtype: lateral_groove
+numbering:
+  executable_scheme: pdb_author
+  canonical_annotation_scheme: IMGT
+  rfantibody_export_scheme: Chothia
+  selections_are_encoded_in: pdb_author
+  residue_maps_embedded: false
+  mapping_strategy:
+    status: maps_not_embedded
+    reason: Exact IMGT/Chothia residue maps should be generated from the cleaned framework sequence; storing guessed maps inside the built-in YAML would be unsafe.
+    generate_from_cleaned_framework_pdb: lateral_groove_framework_v1.pdb
+    tools_in_preference_order:
+    - ANARCI
+    - AbNumber
+    store_generated_maps_next_to_profile: true
+    recommended_output_files:
+      imgt_map_yaml: lateral_groove_1I3U_1I3V_imgt_map.yml
+      chothia_map_yaml: lateral_groove_1I3U_1I3V_chothia_map.yml
+    selection_policy: All explicit residue selections in this YAML remain in executable_scheme until converted by a mapping-aware parser.
+selection_conventions:
+  atomistic_jobs_read: pdb_author residue ids from cleaned PDB inputs
+  human_annotation_prefers: IMGT once a residue map has been generated
+  rfantibody_branch_reads: Chothia-numbered PDB followed by HLT conversion
+oligomeric_state: monomer
+template_choice_rationale: Representative exemplar for a side-open groove because the RR1 free/complex pair (1I3V/1I3U) shows ligand recognition dominated by a lateral CDR2/CDR3/framework groove rather than a true tunnel or deep cavity. In v3 this profile remains intentionally open-sided so it does not collapse into the more buried modes.
+template_files:
+  original_holo_pdb: lateral_groove_1I3U_original_holo.pdb
+  original_apo_pdb: lateral_groove_1I3V_original_apo.pdb
+  cleaned_holo_reference_pdb: lateral_groove_1I3U_holo_ref_H.pdb
+  cleaned_framework_pdb: lateral_groove_framework_v1.pdb
+  cleaned_pseudo_apo_pdb: null
+integration_contract:
+  profile_selector_value: lateral_groove
+  framework_pdb_for_rfd3_rf3: lateral_groove_framework_v1.pdb
+  holo_reference_pdb_for_rf3: lateral_groove_1I3U_holo_ref_H.pdb
+  framework_pdb_for_rfantibody_preconversion: lateral_groove_framework_v1.pdb
+  requires_profile_parser: true
+  requires_mapping_engine_for_rfantibody: true
+  requires_mapping_engine_for_imgt_exports: true
+protein_chain_ids:
+- H
+ligand:
+  resname: RR1
+  pdb_resseq: 401
+  pocket_center_xyz_from_holo:
+  - 29.08
+  - 18.25
+  - 53.715
+  ligand_principal_axis_from_holo:
+  - 0.96446
+  - -0.24604
+  - -0.09634
+ligand_contract:
+  source_of_truth:
+    explicit_h_required: true
+    preserve_internal_geometry: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    preserve_protomer_tautomer_identity: true
+  model_view:
+    generate_per_stage: true
+    persistent_artifact: false
+    derive_from_source_of_truth: true
+    drop_explicit_hydrogens: true
+    preserve_bond_order: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    residue_naming_policy: guaranteed_non_conflicting_custom_component
+    preferred_residue_namespace: L:0
+    atom_names_must_be_stable: true
+    require_truth_atom_map: true
+  reference_holo_usage:
+    allowed_uses:
+    - pocket_frame_definition
+    - rf3_template_context
+    - rf3_ground_truth_conformer_reference
+    forbidden_uses:
+    - target_working_ligand_substitution
+    - analog_working_ligand_substitution
+    - decoy_working_ligand_substitution
+    - final_export_complex_ligand
+stage_policy:
+  default_selectivity_mode: target_specific
+  rfd3:
+    primary_states:
+    - target_holo
+    - apo
+    analog_policy: soft_reference_only
+    decoy_policy: exclude_from_generation
+    conditioning_strength: surface_hook_optional
+  ligand_mpnn:
+    primary_state: target_holo
+    analog_decoy_policy: exclude_from_sequence_recovery
+  rf3:
+    default_path: direct_complex
+    target_role: reward
+    apo_role: constraint
+    analog_role: medium_penalty
+    decoy_role: strong_penalty
+  one_shot_refine:
+    target_role: rescue_target_favorable_designs_only
+    analog_decoy_role: rerank_refine_candidates_not_primary_generation
+region_policy:
+  hard_fixed_core:
+    selection:
+    - H:2-32
+    - H:34-46
+    - H:48-49
+    - H:57-60
+    - H:65-103
+    - H:112-115
+    - H:117-127
+    rationale: Keep the domain core and distal framework fixed during early-stage design.
+  semi_movable_shell:
+    selection:
+    - H:51
+    - H:61
+    - H:63
+    - H:105
+    rationale: Allow local backbone/sidechain accommodation during RFD3/RF3 but avoid unrestricted sequence redesign unless needed.
+  designable_contact_layer:
+    selection:
+    - H:33
+    - H:47
+    - H:50
+    - H:52-56
+    - H:62
+    - H:64
+    - H:104
+    - H:106-111
+    - H:116
+    rationale: Primary ligand-contact layer for LigandMPNN or constrained sidechain redesign.
+  preserve_positions:
+  - H:23
+  - H:94
+pocket_segments:
+  lateral_surface:
+  - H:47-56
+  - H:62-64
+  rim:
+  - H:104-111
+  distal_aromatic:
+  - H:116
+contact_grammar:
+  required_features:
+  - name: primary_lateral_wall
+    hardness: hard
+    description: One principal wall should support side-on packing along the groove surface.
+    allowed_positions:
+    - H:47-56
+  - name: secondary_lateral_wall
+    hardness: hard
+    description: A second wall or rim should oppose the primary wall without fully capping the site.
+    allowed_positions:
+    - H:104-111
+  - name: side_open_surface
+    hardness: hard
+    description: At least one face of the ligand must remain laterally open to solvent.
+    allowed_positions:
+    - H:47-56
+    - H:62-64
+    - H:104-111
+  - name: rim_polar_hook
+    hardness: soft
+    description: One or two polar/basic hooks can stabilize a heteroatom-bearing substituent near the groove rim.
+    allowed_positions:
+    - H:50-56
+    - H:62-64
+    - H:104-107
+  - name: aromatic_surface_patch
+    hardness: soft
+    description: Flat aromatic or hydrophobic patch for face-on or edge-on packing along the groove.
+    allowed_positions:
+    - H:47
+    - H:62
+    - H:108
+    - H:116
+  negative_constraints:
+  - forbid_full_tunnel_closure
+  - forbid_deep_bottom_stop
+  - forbid_closed_roof_buttress
+  - forbid_full_cavity_closure
+  - allow_side_exposed_pose
+  burial_target_range:
+  - 0.22
+  - 0.62
+workflow_hints:
+  rfd3:
+    template_backbone_selection:
+    - H:2-32
+    - H:34-46
+    - H:48-49
+    - H:51
+    - H:57-61
+    - H:63
+    - H:65-103
+    - H:105
+    - H:112-115
+    - H:117-127
+    allow_backbone_perturbation_selection:
+    - H:33
+    - H:47
+    - H:50-56
+    - H:61-64
+    - H:104-111
+    - H:116
+    primary_contact_design_selection:
+    - H:33
+    - H:47
+    - H:50
+    - H:52-56
+    - H:62
+    - H:64
+    - H:104
+    - H:106-111
+    - H:116
+    notes: 'Preserve a side-open groove: do not overclose the site into a tunnel or deep cavity. Keep template selections in pdb_author numbering.'
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    template_ligand_usage: reference_frame_only
+    hydrogen_conditioning_mode: optional_surface_hook
+    donor_acceptor_priority:
+      preferred_hook_segment:
+      - H:50-56
+      - H:62-64
+      - H:104-107
+  ligand_mpnn:
+    design_positions:
+    - H:33
+    - H:47
+    - H:50
+    - H:52-56
+    - H:62
+    - H:64
+    - H:104
+    - H:106-111
+    - H:116
+    optional_context_positions:
+    - H:51
+    - H:61
+    - H:63
+    - H:105
+    fixed_positions:
+    - H:2-32
+    - H:34-46
+    - H:48-49
+    - H:57-60
+    - H:65-103
+    - H:112-115
+    - H:117-127
+    notes: 'Use pdb_author residue ids exactly as stored in the cleaned framework PDB. First pass: design contact layer only. Second pass, if needed, release selected semi-movable shell positions.'
+    selection_numbering: pdb_author
+  rf3:
+    template_selection:
+    - H:2-32
+    - H:34-46
+    - H:48-49
+    - H:51
+    - H:57-61
+    - H:63
+    - H:65-103
+    - H:105
+    - H:112-115
+    - H:117-127
+    ligand_reference_pdb: lateral_groove_1I3U_holo_ref_H.pdb
+    ground_truth_conformer_selection: RR1
+    notes: Use the cleaned holo reference to provide the ligand conformer. Keep all template selections in pdb_author numbering.
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    complex_input_mode: direct_complex_preferred
+    fallback_mode: protein_only_then_truth_ligand_backprojection
+    sanity_gate:
+      drop_failed_designs: true
+      fail_job_only_if_all_designs_drop: true
+      thresholds:
+        internal_conformer_rmsd: 1.0
+        ligand_drift_rmsd: 4.0
+        min_protein_ligand_distance: 6.5
+        contact_count_within_5A: 3
+        ligand_buried_fraction_max: 0.7
+        min_contacts_with_primary_wall: 2
+        min_contacts_with_secondary_wall: 1
+        ligand_centroid_drift_A: 4.5
+      metric_policies:
+        internal_conformer_rmsd: warn
+        ligand_drift_rmsd: warn
+        min_protein_ligand_distance: drop
+        contact_count_within_5A: drop
+        ligand_buried_fraction_max: drop_if_above
+        min_contacts_with_primary_wall: drop_if_below
+        min_contacts_with_secondary_wall: drop_if_below
+        ligand_centroid_drift_A: warn
+      state_policies:
+        target: drop
+        analog: warn
+        decoy: warn
+        apo: ignore
+      segment_contact_sets:
+        primary_wall:
+        - H:47-56
+        secondary_wall:
+        - H:104-111
+        rim_hook:
+        - H:62-64
+  rfantibody:
+    supported: true
+    requires_chothia_hlt_conversion: true
+    notes: Generate an on-demand Chothia map from the cleaned framework PDB, emit a Chothia-numbered framework PDB, and then convert it to HLT remarks for RFantibody. Do not reinterpret pdb_author selections as Chothia without an explicit mapping step.
+    input_numbering_required: Chothia_annotated_PDB
+    source_framework_before_conversion: lateral_groove_framework_v1.pdb
+notes: 'V4 topology-first interpretation: use this profile when the ligand should remain side accessible in a laterally exposed groove on the VHH surface. The defining feature is not a deep bottom stop but a two-wall surface groove with at least one open face; burial that becomes too high should be treated as mode drift toward deep_cavity or tunnel.'
+topology:
+  topology_class: lateral_groove
+  topology_subtype: side_open_surface_groove
+  openness_model:
+    open_faces_expected_min: 1
+    open_faces_expected_max: 2
+    side_open_allowed: true
+    roof_or_lid_required: false
+    backwall_required: false
+  anisotropy_model:
+    elongated_axis_required: false
+    radial_enclosure_required: false
+    surface_parallel_pose_preferred: true
+    inter_sheet_slit_required: false
+  required_segments:
+  - primary_wall
+  - secondary_wall
+  - rim_hook
+  - open_surface_side
+  role_segments:
+    primary_wall:
+    - H:47-56
+    secondary_wall:
+    - H:104-111
+    rim_hook:
+    - H:62-64
+    distal_patch:
+    - H:116
+    open_surface_side:
+    - H:47-56
+    - H:62-64
+    - H:104-111
+  required_structural_roles:
+  - primary_wall
+  - secondary_wall
+  - open_surface_side
+  canonical_pose_description: Ligand tracks along a side-open groove on the VHH surface, making wall contacts while remaining at least partly solvent exposed rather than deeply buried.
+filter_grammar:
+  primary_decision_axis: retain_side_open_surface_groove
+  metric_semantics:
+    min_protein_ligand_distance: drop_if_above
+    contact_count_within_5A: drop_if_below
+    ligand_buried_fraction_max: drop_if_above
+    min_contacts_with_primary_wall: drop_if_below
+    min_contacts_with_secondary_wall: drop_if_below
+  hard_filters:
+  - name: cap_max_burial
+    metric: ligand_buried_fraction_max
+    threshold: 0.7
+  - name: retain_primary_wall_contacts
+    metric: min_contacts_with_primary_wall
+    threshold: 2
+  - name: retain_secondary_wall_contacts
+    metric: min_contacts_with_secondary_wall
+    threshold: 1
+  soft_rankers:
+  - name: prefer_side_open_pose
+    metric: ligand_buried_fraction_max
+    direction: lower_is_better
+  - name: prefer_more_wall_contacts
+    metric: contact_count_within_5A
+    direction: higher_is_better
+  reject_patterns:
+  - deep_bottom_stop_pose
+  - closed_tunnel_pose
+  - fully_capped_cavity_pose

@@ -1,0 +1,519 @@
+schema_version: '2.2'
+profile_id: builtin::tunnel_cdr1_cdr2_fr3
+profile_provenance:
+  supersedes_profile_id: tunnel_cdr1_cdr2_fr3_fipronil_v3
+  source_yaml: tunnel_cdr1_cdr2_fr3_fipronil_v3.yml
+  status: active_built_in_profile
+built_in_profile:
+  is_built_in: true
+  built_in_key: tunnel_cdr1_cdr2_fr3
+  display_name: Tunnel (CDR1/CDR2/FR3)
+  ui_group: Small-molecule VHH framework profiles
+  ui_order: 4
+  selectable_in_ui: true
+  default_pipeline: rfd3_ligandmpnn_rf3
+  supported_pipelines:
+    rfd3_ligandmpnn_rf3: true
+    rfantibody_branch: true
+title: tunnel_cdr1_cdr2_fr3 / inter-sheet edge-slit tunnel mode (Fipronil exemplar)
+mode_family: small_molecule_vhh
+mode_subtype: tunnel_cdr1_cdr2_fr3
+numbering:
+  executable_scheme: pdb_author
+  canonical_annotation_scheme: IMGT
+  rfantibody_export_scheme: Chothia
+  selections_are_encoded_in: pdb_author
+  residue_maps_embedded: false
+  mapping_strategy:
+    status: maps_not_embedded
+    reason: Exact IMGT/Chothia residue maps should be generated from the cleaned framework sequence; storing guessed maps inside the built-in YAML would be unsafe.
+    generate_from_cleaned_framework_pdb: tunnel_cdr1_cdr2_fr3_framework_v3_holo_stripped.pdb
+    tools_in_preference_order:
+    - ANARCI
+    - AbNumber
+    store_generated_maps_next_to_profile: true
+    recommended_output_files:
+      imgt_map_yaml: tunnel_cdr1_cdr2_fr3_fipronil_imgt_map.yml
+      chothia_map_yaml: tunnel_cdr1_cdr2_fr3_fipronil_chothia_map.yml
+    selection_policy: All explicit residue selections in this YAML remain in executable_scheme until converted by a mapping-aware parser.
+selection_conventions:
+  atomistic_jobs_read: pdb_author residue ids from cleaned PDB inputs
+  human_annotation_prefers: IMGT once a residue map has been generated
+  rfantibody_branch_reads: Chothia-numbered PDB followed by HLT conversion
+oligomeric_state: monomer
+template_choice_rationale: 'Representative exemplar for the CDR1/CDR2/FR3 tunnel class because this matched apo/holo pair captures an FR-augmented, preorganized, and largely CDR3-independent tunnel. In v3 this profile is intentionally conservative: the main scaffold is a holo-stripped framework so the native tunnel centroid, FR3 backwall, and deep stop are retained during generation instead of being rediscovered from scratch.'
+template_files:
+  original_holo_pdb: tunnel_cdr1_cdr2_fr3_fipronil_original_holo.pdb
+  original_apo_pdb: tunnel_cdr1_cdr2_fr3_fipronil_original_apo.pdb
+  cleaned_holo_reference_pdb: tunnel_cdr1_cdr2_fr3_fipronil_holo_ref_H.pdb
+  cleaned_framework_pdb: tunnel_cdr1_cdr2_fr3_framework_v3_holo_stripped.pdb
+  cleaned_pseudo_apo_pdb: tunnel_cdr1_cdr2_fr3_framework_v1.pdb
+integration_contract:
+  profile_selector_value: tunnel_cdr1_cdr2_fr3
+  framework_pdb_for_rfd3_rf3: tunnel_cdr1_cdr2_fr3_framework_v3_holo_stripped.pdb
+  holo_reference_pdb_for_rf3: tunnel_cdr1_cdr2_fr3_fipronil_holo_ref_H.pdb
+  framework_pdb_for_rfantibody_preconversion: tunnel_cdr1_cdr2_fr3_framework_v3_holo_stripped.pdb
+  requires_profile_parser: true
+  requires_mapping_engine_for_rfantibody: true
+  requires_mapping_engine_for_imgt_exports: true
+protein_chain_ids:
+- H
+ligand:
+  resname: LIG
+  pdb_resseq: 201
+  pocket_center_xyz_from_holo:
+  - -0.905
+  - 28.052
+  - 67.111
+  ligand_principal_axis_from_holo:
+  - 0.31993
+  - -0.79728
+  - 0.51184
+ligand_contract:
+  source_of_truth:
+    explicit_h_required: true
+    preserve_internal_geometry: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    preserve_protomer_tautomer_identity: true
+  model_view:
+    generate_per_stage: true
+    persistent_artifact: false
+    derive_from_source_of_truth: true
+    drop_explicit_hydrogens: true
+    preserve_bond_order: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    residue_naming_policy: guaranteed_non_conflicting_custom_component
+    preferred_residue_namespace: L:0
+    atom_names_must_be_stable: true
+    require_truth_atom_map: true
+  reference_holo_usage:
+    allowed_uses:
+    - pocket_frame_definition
+    - rf3_template_context
+    - rf3_ground_truth_conformer_reference
+    forbidden_uses:
+    - target_working_ligand_substitution
+    - analog_working_ligand_substitution
+    - decoy_working_ligand_substitution
+    - final_export_complex_ligand
+stage_policy:
+  default_selectivity_mode: target_specific
+  rfd3:
+    primary_states:
+    - target_holo
+    - apo
+    analog_policy: soft_reference_only
+    decoy_policy: exclude_from_generation
+    conditioning_strength: single_anchor_halogen_tolerant_tunnel
+  ligand_mpnn:
+    primary_state: target_holo
+    analog_decoy_policy: exclude_from_sequence_recovery
+  rf3:
+    default_path: direct_complex
+    target_role: reward
+    apo_role: constraint
+    analog_role: medium_penalty
+    decoy_role: strong_penalty
+  one_shot_refine:
+    target_role: rescue_target_favorable_designs_only
+    analog_decoy_role: rerank_refine_candidates_not_primary_generation
+region_policy:
+  hard_fixed_core:
+    selection:
+    - H:4-5
+    - H:7-23
+    - H:27-28
+    - H:30
+    - H:37-52
+    - H:53-55
+    - H:60-72
+    - H:78
+    - H:83-99
+    - H:101-102
+    - H:103-132
+    rationale: Keep the domain core and distal framework fixed during early-stage design.
+  semi_movable_shell:
+    selection:
+    - H:29
+    - H:32
+    rationale: Restrict backbone accommodation to the entrance and transition region; do not let the FR3 backwall or deep stop rewrite the native tunnel.
+  designable_contact_layer:
+    selection:
+    - H:6
+    - H:24-26
+    - H:31
+    - H:33-36
+    rationale: Primary entry-lip contact-tuning layer. The mouth clamp, FR3 backwall, and bottom stop remain topology-holding instead of being co-designed in the first pass.
+  preserve_positions:
+  - H:22
+  - H:74
+  - H:80
+  - H:81
+  - H:96
+  - H:101
+pocket_segments:
+  entrance:
+  - H:24-36
+  middle:
+  - H:53-55
+  - H:61
+  - H:73-79
+  bottom:
+  - H:80-82
+  - H:101-102
+contact_grammar:
+  required_features:
+  - name: cdr1_front_lip
+    hardness: hard
+    description: CDR1 defines the front-entry lip and initial trajectory of the ligand.
+    allowed_positions:
+    - H:24-36
+  - name: cdr2_mouth_clamp
+    hardness: hard
+    description: CDR2 contributes a mouth clamp that prevents the slit from behaving like a simple surface bowl.
+    allowed_positions:
+    - H:53-55
+    - H:61
+  - name: slit_axis_retention
+    hardness: hard
+    description: The ligand pose should remain elongated along the native edge-slit axis instead of rotating into a surface bowl.
+    allowed_positions: []
+  - name: fr3_backwall
+    hardness: hard
+    description: FR3 must supply the dominant buried backwall of the tunnel.
+    allowed_positions:
+    - H:73-77
+    - H:80-82
+  - name: bottom_stop_or_anchor
+    hardness: hard
+    description: A true buried stop or anchor cluster must terminate the slit at depth.
+    allowed_positions:
+    - H:80-82
+    - H:101-102
+  - name: cdr3_not_required
+    hardness: hard
+    description: Do not force direct CDR3 participation for this subtype.
+    allowed_positions: []
+  negative_constraints:
+  - forbid_forced_strong_deep_polar_anchor
+  - forbid_cdr3_mandatory_rule
+  - forbid_surface_escape_pose
+  - forbid_bowl_like_relocation
+  - forbid_cdr3_dominant_relocation
+  - forbid_ligand_centroid_outside_native_tunnel_box
+  - forbid_loss_of_fr3_backwall
+  - forbid_loss_of_cdr2_mouth_clamp
+  burial_target_range:
+  - 0.74
+  - 0.93
+workflow_hints:
+  rfd3:
+    template_backbone_selection:
+    - H:4-5
+    - H:7-23
+    - H:27-30
+    - H:32
+    - H:37-52
+    - H:53-55
+    - H:60-72
+    - H:73-82
+    - H:83-100
+    - H:101-102
+    - H:103-132
+    allow_backbone_perturbation_selection:
+    - H:29
+    - H:31-36
+    primary_contact_design_selection:
+    - H:6
+    - H:24-26
+    - H:31
+    - H:33-36
+    notes: 'Preserve an inter-sheet edge-slit tunnel: keep the CDR2 mouth clamp, FR3 backwall, and bottom stop fixed, permit only local entrance accommodation, and treat the CDR1/front-lip layer as the primary contact-tuning zone. Keep template selections in pdb_author numbering.'
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    template_ligand_usage: reference_frame_only
+    hydrogen_conditioning_mode: single_weak_anchor_optional
+    donor_acceptor_priority:
+      preferred_entrance_segment:
+      - H:24-36
+      preferred_bottom_segment:
+      - H:101
+  ligand_mpnn:
+    design_positions:
+    - H:6
+    - H:24-26
+    - H:31
+    - H:33-36
+    contact_tuning_positions:
+    - H:6
+    - H:24-26
+    - H:31
+    - H:33-36
+    topology_holding_positions:
+    - H:53
+    - H:55
+    - H:61
+    - H:73-77
+    - H:80-82
+    - H:101-102
+    secondary_release_positions:
+    - H:29
+    - H:32
+    secondary_release_fraction: 0.125
+    optional_context_positions:
+    - H:29
+    - H:32
+    fixed_positions:
+    - H:4-5
+    - H:7-23
+    - H:27-28
+    - H:30
+    - H:37-52
+    - H:53-55
+    - H:60-72
+    - H:73-77
+    - H:80-82
+    - H:78-79
+    - H:83-100
+    - H:101-102
+    - H:103-132
+    notes: 'Topology-retention mode: first design only the front-lip contact-tuning layer. The CDR2 mouth clamp, FR3 backwall, and bottom-stop residues are held fixed through LigandMPNN; optional release is limited to a small entrance-transition shoulder pass.'
+    selection_numbering: pdb_author
+  rf3:
+    template_selection:
+    - H:4-5
+    - H:7-23
+    - H:27-30
+    - H:32
+    - H:37-52
+    - H:54
+    - H:60
+    - H:62-72
+    - H:73-82
+    - H:83-100
+    - H:102-132
+    ligand_reference_pdb: tunnel_cdr1_cdr2_fr3_fipronil_holo_ref_H.pdb
+    ground_truth_conformer_selection: LIG
+    notes: Use the cleaned holo reference to provide the ligand conformer and the holo-stripped framework to preserve tunnel topology. Reject surface-escape poses even if they make local contacts.
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    complex_input_mode: direct_complex_preferred
+    fallback_mode: protein_only_then_truth_ligand_backprojection
+    sanity_gate:
+      drop_failed_designs: true
+      fail_job_only_if_all_designs_drop: true
+      thresholds:
+        internal_conformer_rmsd: 1.25
+        ligand_drift_rmsd: 3.5
+        min_protein_ligand_distance: 6.0
+        contact_count_within_5A: 4
+        ligand_centroid_drift_A: 3.0
+        ligand_axis_angle_drift_deg: 35.0
+        ligand_buried_fraction_min: 0.72
+        min_contacts_with_cdr1: 2
+        min_contacts_with_fr3: 3
+        min_contacts_with_bottom_cluster: 1
+        min_contacts_with_cdr2: 1
+      metric_policies:
+        internal_conformer_rmsd: warn
+        ligand_drift_rmsd: drop
+        min_protein_ligand_distance: drop
+        contact_count_within_5A: drop
+        ligand_centroid_drift_A: drop
+        ligand_axis_angle_drift_deg: drop
+        ligand_buried_fraction_min: drop_if_below
+        min_contacts_with_cdr1: drop_if_below
+        min_contacts_with_fr3: drop_if_below
+        min_contacts_with_bottom_cluster: drop_if_below
+        min_contacts_with_cdr2: drop_if_below
+      state_policies:
+        target: drop
+        analog: warn
+        decoy: warn
+        apo: ignore
+      segment_contact_sets:
+        cdr1:
+        - H:24-36
+        cdr2:
+        - H:53-55
+        - H:61
+        fr3:
+        - H:73-82
+        bottom_cluster:
+        - H:80-82
+        - H:101-102
+      native_tunnel_box:
+        center_from_holo:
+        - -0.905
+        - 28.052
+        - 67.111
+        half_lengths_A:
+        - 4.0
+        - 5.0
+        - 4.0
+  rfantibody:
+    supported: true
+    requires_chothia_hlt_conversion: true
+    notes: Generate an on-demand Chothia map from the cleaned framework PDB, emit a Chothia-numbered framework PDB, and then convert it to HLT remarks for RFantibody. Do not reinterpret pdb_author selections as Chothia without an explicit mapping step.
+    input_numbering_required: Chothia_annotated_PDB
+    source_framework_before_conversion: tunnel_cdr1_cdr2_fr3_framework_v3_holo_stripped.pdb
+notes: 'V4 topology-first interpretation: use this profile only when the ligand is meant to occupy a beta-sandwich edge slit backed by FR3, with CDR1/CDR2 shaping the mouth and a buried bottom-stop cluster arresting the pose. This mode is explicitly pocket-retentive and should reject bowl-like surface relocation.'
+topology:
+  topology_class: tunnel
+  topology_subtype: inter_sheet_edge_slit_tunnel
+  openness_model:
+    open_faces_expected_max: 1
+    side_open_allowed: false
+    roof_or_lid_required: false
+    backwall_required: true
+  anisotropy_model:
+    elongated_axis_required: true
+    radial_enclosure_required: false
+    surface_parallel_pose_preferred: false
+    inter_sheet_slit_required: true
+  required_segments:
+  - cdr1_front_lip
+  - cdr2_mouth_clamp
+  - shaft
+  - fr3_backwall
+  - bottom_stop_cluster
+  role_segments:
+    cdr1_front_lip:
+    - H:24-36
+    cdr2_mouth_clamp:
+    - H:53-55
+    - H:61
+    shaft:
+    - H:53-55
+    - H:61
+    - H:73-79
+    fr3_backwall:
+    - H:73-82
+    bottom_stop_cluster:
+    - H:80-82
+    - H:101-102
+  wall_sets:
+    front_wall:
+    - H:24-36
+    - H:53-55
+    - H:61
+    back_wall:
+    - H:73-82
+    mouth_clamp:
+    - H:53-55
+    - H:61
+    bottom_stop:
+    - H:80-82
+    - H:101-102
+  slit_frame:
+    center_from_holo:
+    - -0.905
+    - 28.052
+    - 67.111
+    axis_from_holo:
+    - 0.31993
+    - -0.79728
+    - 0.51184
+    slit_width_target_A: 5.5
+    slit_width_tolerance_A: 1.5
+  beta_sheet_topology:
+    required: true
+    frame_source: frozen_post_rfd3_backbone
+    recompute_after_ligand_mpnn: false
+    recompute_after_rf3: true
+    recompute_atoms: backbone_only
+    rim_A_anchor_backbone_positions:
+    - H:31-36
+    - H:53-55
+    rim_B_anchor_backbone_positions:
+    - H:73-77
+    - H:80-82
+    rim_A_contact_positions:
+    - H:31-36
+    - H:53-55
+    rim_B_contact_positions:
+    - H:73-77
+    - H:80-82
+    sheet_rim_sets:
+      rim_A:
+      - H:31-36
+      - H:53-55
+      rim_B:
+      - H:73-77
+      - H:80-82
+    gap_requirements:
+      ligand_must_contact_both_rims: true
+      min_contacts_rim_A: 2
+      min_contacts_rim_B: 2
+      ligand_centroid_between_rims: true
+  required_structural_roles:
+  - cdr1_front_lip
+  - cdr2_mouth_clamp
+  - fr3_backwall
+  - bottom_stop_cluster
+  canonical_pose_description: Ligand sits in an edge slit at the rim of the VHH beta-sandwich, clamped at the mouth by CDR1/CDR2 and backed by FR3 rather than by a CDR3 roof.
+filter_grammar:
+  primary_decision_axis: retain_inter_sheet_edge_slit_topology
+  metric_semantics:
+    min_protein_ligand_distance: drop_if_above
+    contact_count_within_5A: drop_if_below
+    ligand_buried_fraction_min: drop_if_below
+    ligand_centroid_drift_A: drop_if_above
+    ligand_axis_angle_drift_deg: drop_if_above
+    min_contacts_with_cdr1: drop_if_below
+    min_contacts_with_cdr2: drop_if_below
+    min_contacts_with_fr3: drop_if_below
+    min_contacts_with_bottom_cluster: drop_if_below
+    rim_A_contacts: drop_if_below
+    rim_B_contacts: drop_if_below
+    ligand_between_rims: drop_if_below
+  hard_filters:
+  - name: retain_edge_slit_centroid
+    metric: ligand_centroid_drift_A
+    threshold: 3.0
+  - name: retain_edge_slit_axis
+    metric: ligand_axis_angle_drift_deg
+    threshold: 35.0
+  - name: retain_cdr1_contacts
+    metric: min_contacts_with_cdr1
+    threshold: 2
+  - name: retain_cdr2_contacts
+    metric: min_contacts_with_cdr2
+    threshold: 1
+  - name: retain_fr3_backwall_contacts
+    metric: min_contacts_with_fr3
+    threshold: 3
+  - name: retain_bottom_cluster_contacts
+    metric: min_contacts_with_bottom_cluster
+    threshold: 1
+  - name: retain_rim_A_contacts
+    metric: rim_A_contacts
+    threshold: 2
+  - name: retain_rim_B_contacts
+    metric: rim_B_contacts
+    threshold: 2
+  - name: retain_between_sheet_rims
+    metric: ligand_between_rims
+    threshold: 1
+  soft_rankers:
+  - name: prefer_higher_burial_within_range
+    metric: ligand_buried_fraction_min
+    direction: higher_is_better
+  - name: prefer_lower_centroid_drift
+    metric: ligand_centroid_drift_A
+    direction: lower_is_better
+  - name: prefer_rim_A_capture
+    metric: rim_A_contacts
+    direction: higher_is_better
+  - name: prefer_rim_B_capture
+    metric: rim_B_contacts
+    direction: higher_is_better
+  - name: prefer_between_rims_pose
+    metric: ligand_between_rims
+    direction: higher_is_better
+  reject_patterns:
+  - surface_escape_pose
+  - bowl_like_relocation
+  - cdr3_roof_takeover

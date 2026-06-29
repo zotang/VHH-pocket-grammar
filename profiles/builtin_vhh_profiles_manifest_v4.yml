@@ -1,0 +1,45 @@
+schema_version: '1.0'
+registry_name: builtin_vhh_framework_profiles
+profiles:
+- built_in_key: deep_cavity
+  display_name: Deep cavity
+  profile_yaml: deep_cavity_7TJC_v4.yml
+  framework_pdb: deep_cavity_framework_v1.pdb
+  holo_reference_pdb: deep_cavity_7TJC_holo_ref_H.pdb
+  supports_rfantibody: true
+  oligomeric_state: monomer
+  mode_subtype: deep_cavity
+- built_in_key: lateral_groove
+  display_name: Lateral groove
+  profile_yaml: lateral_groove_1I3U_1I3V_v4.yml
+  framework_pdb: lateral_groove_framework_v1.pdb
+  holo_reference_pdb: lateral_groove_1I3U_holo_ref_H.pdb
+  supports_rfantibody: true
+  oligomeric_state: monomer
+  mode_subtype: lateral_groove
+- built_in_key: tunnel_cdr1_cdr3_fr1
+  display_name: Tunnel (CDR1/CDR3/FR1)
+  profile_yaml: tunnel_cdr1_cdr3_fr1_3QXV_3QXW_v4.yml
+  framework_pdb: tunnel_cdr1_cdr3_fr1_framework_v1.pdb
+  holo_reference_pdb: tunnel_cdr1_cdr3_fr1_3QXV_holo_ref_H.pdb
+  supports_rfantibody: true
+  oligomeric_state: monomer
+  mode_subtype: tunnel_cdr1_cdr3_fr1
+- built_in_key: tunnel_cdr1_cdr2_fr3
+  display_name: Tunnel (CDR1/CDR2/FR3)
+  profile_yaml: tunnel_cdr1_cdr2_fr3_fipronil_v4.yml
+  framework_pdb: tunnel_cdr1_cdr2_fr3_framework_v3_holo_stripped.pdb
+  holo_reference_pdb: tunnel_cdr1_cdr2_fr3_fipronil_holo_ref_H.pdb
+  supports_rfantibody: true
+  oligomeric_state: monomer
+  mode_subtype: tunnel_cdr1_cdr2_fr3
+  auxiliary_apo_framework_pdb: tunnel_cdr1_cdr2_fr3_framework_v1.pdb
+- built_in_key: dimeric_groove
+  display_name: Dimeric groove
+  profile_yaml: dimeric_groove_8FTG_v4.yml
+  framework_pdb: dimeric_groove_framework_v1.pdb
+  holo_reference_pdb: dimeric_groove_8FTG_holo_ref_HJ.pdb
+  supports_rfantibody: false
+  oligomeric_state: homodimer
+  mode_subtype: dimeric_groove
+profile_set_version: v4

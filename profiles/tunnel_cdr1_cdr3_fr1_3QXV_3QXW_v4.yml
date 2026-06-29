@@ -1,0 +1,422 @@
+schema_version: '2.2'
+profile_id: builtin::tunnel_cdr1_cdr3_fr1
+profile_provenance:
+  supersedes_profile_id: tunnel_cdr1_cdr3_fr1_3QXV_3QXW_v3
+  source_yaml: tunnel_cdr1_cdr3_fr1_3QXV_3QXW_v3.yml
+  status: active_built_in_profile
+built_in_profile:
+  is_built_in: true
+  built_in_key: tunnel_cdr1_cdr3_fr1
+  display_name: Tunnel (CDR1/CDR3/FR1)
+  ui_group: Small-molecule VHH framework profiles
+  ui_order: 3
+  selectable_in_ui: true
+  default_pipeline: rfd3_ligandmpnn_rf3
+  supported_pipelines:
+    rfd3_ligandmpnn_rf3: true
+    rfantibody_branch: true
+title: tunnel_cdr1_cdr3_fr1 / roofed under-CDR1 tunnel mode (3QXV/3QXW MTX exemplar)
+mode_family: small_molecule_vhh
+mode_subtype: tunnel_cdr1_cdr3_fr1
+numbering:
+  executable_scheme: pdb_author
+  canonical_annotation_scheme: IMGT
+  rfantibody_export_scheme: Chothia
+  selections_are_encoded_in: pdb_author
+  residue_maps_embedded: false
+  mapping_strategy:
+    status: maps_not_embedded
+    reason: Exact IMGT/Chothia residue maps should be generated from the cleaned framework sequence; storing guessed maps inside the built-in YAML would be unsafe.
+    generate_from_cleaned_framework_pdb: tunnel_cdr1_cdr3_fr1_framework_v1.pdb
+    tools_in_preference_order:
+    - ANARCI
+    - AbNumber
+    store_generated_maps_next_to_profile: true
+    recommended_output_files:
+      imgt_map_yaml: tunnel_cdr1_cdr3_fr1_3QXV_3QXW_imgt_map.yml
+      chothia_map_yaml: tunnel_cdr1_cdr3_fr1_3QXV_3QXW_chothia_map.yml
+    selection_policy: All explicit residue selections in this YAML remain in executable_scheme until converted by a mapping-aware parser.
+selection_conventions:
+  atomistic_jobs_read: pdb_author residue ids from cleaned PDB inputs
+  human_annotation_prefers: IMGT once a residue map has been generated
+  rfantibody_branch_reads: Chothia-numbered PDB followed by HLT conversion
+oligomeric_state: monomer
+template_choice_rationale: Representative exemplar for a front-entry elongated tunnel because the 3QXV/3QXW pair captures a ligand entering beneath the CDR1 front rim while a buttressing roof element helps preserve an extended tunnel rather than an open cavity. In v3 the shaft geometry is kept hard so this mode cannot relax into a generic front-pocket prior.
+template_files:
+  original_holo_pdb: tunnel_cdr1_cdr3_fr1_3QXV_original_holo.pdb
+  original_apo_pdb: tunnel_cdr1_cdr3_fr1_3QXW_original_apo.pdb
+  cleaned_holo_reference_pdb: tunnel_cdr1_cdr3_fr1_3QXV_holo_ref_H.pdb
+  cleaned_framework_pdb: tunnel_cdr1_cdr3_fr1_framework_v1.pdb
+  cleaned_pseudo_apo_pdb: null
+integration_contract:
+  profile_selector_value: tunnel_cdr1_cdr3_fr1
+  framework_pdb_for_rfd3_rf3: tunnel_cdr1_cdr3_fr1_framework_v1.pdb
+  holo_reference_pdb_for_rf3: tunnel_cdr1_cdr3_fr1_3QXV_holo_ref_H.pdb
+  framework_pdb_for_rfantibody_preconversion: tunnel_cdr1_cdr3_fr1_framework_v1.pdb
+  requires_profile_parser: true
+  requires_mapping_engine_for_rfantibody: true
+  requires_mapping_engine_for_imgt_exports: true
+protein_chain_ids:
+- H
+ligand:
+  resname: MTX
+  pdb_resseq: 2000
+  pocket_center_xyz_from_holo:
+  - -19.964
+  - 11.027
+  - -29.961
+  ligand_principal_axis_from_holo:
+  - 0.42323
+  - 0.87763
+  - 0.22503
+ligand_contract:
+  source_of_truth:
+    explicit_h_required: true
+    preserve_internal_geometry: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    preserve_protomer_tautomer_identity: true
+  model_view:
+    generate_per_stage: true
+    persistent_artifact: false
+    derive_from_source_of_truth: true
+    drop_explicit_hydrogens: true
+    preserve_bond_order: true
+    preserve_formal_charge: true
+    preserve_stereochemistry: true
+    residue_naming_policy: guaranteed_non_conflicting_custom_component
+    preferred_residue_namespace: L:0
+    atom_names_must_be_stable: true
+    require_truth_atom_map: true
+  reference_holo_usage:
+    allowed_uses:
+    - pocket_frame_definition
+    - rf3_template_context
+    - rf3_ground_truth_conformer_reference
+    forbidden_uses:
+    - target_working_ligand_substitution
+    - analog_working_ligand_substitution
+    - decoy_working_ligand_substitution
+    - final_export_complex_ligand
+stage_policy:
+  default_selectivity_mode: target_specific
+  rfd3:
+    primary_states:
+    - target_holo
+    - apo
+    analog_policy: soft_reference_only
+    decoy_policy: exclude_from_generation
+    conditioning_strength: elongated_polar_tunnel
+  ligand_mpnn:
+    primary_state: target_holo
+    analog_decoy_policy: exclude_from_sequence_recovery
+  rf3:
+    default_path: direct_complex
+    target_role: reward
+    apo_role: constraint
+    analog_role: medium_penalty
+    decoy_role: strong_penalty
+  one_shot_refine:
+    target_role: rescue_target_favorable_designs_only
+    analog_decoy_role: rerank_refine_candidates_not_primary_generation
+region_policy:
+  hard_fixed_core:
+    selection:
+    - H:5
+    - H:7-23
+    - H:27
+    - H:33
+    - H:35
+    - H:37-81
+    - H:82-100
+    - H:99
+    - H:101-113
+    - H:119-120
+    - H:121-131
+    rationale: Keep the domain core and distal framework fixed during early-stage design.
+  semi_movable_shell:
+    selection:
+    - H:98
+    rationale: Allow local backbone/sidechain accommodation during RFD3/RF3 but avoid unrestricted sequence redesign unless needed.
+  designable_contact_layer:
+    selection:
+    - H:4
+    - H:6
+    - H:24-26
+    - H:28-32
+    - H:34
+    - H:36
+    rationale: Primary entry-lip contact-tuning layer. The shaft, roof buttress, and bottom stop remain topology-holding instead of being co-designed in the first pass.
+  preserve_positions:
+  - H:22
+  - H:96
+pocket_segments:
+  entrance:
+  - H:24-36
+  middle:
+  - H:74-81
+  bottom:
+  - H:120
+contact_grammar:
+  required_features:
+  - name: cdr1_fr1_entry_lip
+    hardness: hard
+    description: CDR1/FR1 must define the front-entry lip beneath which the ligand enters.
+    allowed_positions:
+    - H:4
+    - H:6
+    - H:24-36
+  - name: shaft_retention
+    hardness: hard
+    description: An elongated steric shaft must be retained rather than collapsing into a bowl-like cavity.
+    allowed_positions:
+    - H:74-81
+  - name: roof_buttress
+    hardness: hard
+    description: A CDR3-adjacent or NHV-like buttress must roof the tunnel.
+    allowed_positions:
+    - H:74-81
+    - H:120
+  - name: bottom_stop
+    hardness: hard
+    description: A buried stop must terminate the shaft at depth.
+    allowed_positions:
+    - H:120
+  - name: elongated_axis_retention
+    hardness: hard
+    description: The ligand pose should preserve a tunnel-like front-to-back axis rather than a surface-parallel groove pose.
+    allowed_positions: []
+  negative_constraints:
+  - forbid_wide_open_cavity
+  - forbid_flat_surface_pose
+  - forbid_side_open_lateral_groove
+  - forbid_loss_of_roof_buttress
+  - forbid_short_bowl_pose
+  burial_target_range:
+  - 0.7
+  - 0.92
+workflow_hints:
+  rfd3:
+    template_backbone_selection:
+    - H:5
+    - H:7-23
+    - H:27
+    - H:33
+    - H:35
+    - H:37-73
+    - H:74-81
+    - H:82-99
+    - H:100
+    - H:101-113
+    - H:119-120
+    - H:121-131
+    allow_backbone_perturbation_selection:
+    - H:4
+    - H:6
+    - H:24-26
+    - H:28-32
+    - H:34
+    - H:36
+    - H:98
+    primary_contact_design_selection:
+    - H:4
+    - H:6
+    - H:24-26
+    - H:28-32
+    - H:34
+    - H:36
+    notes: 'Preserve a roofed under-CDR1 tunnel: keep the shaft, roof buttress, and bottom stop fixed as topology-holding elements, and confine backbone accommodation to the entry lip and a minimal shoulder residue. Keep template selections in pdb_author numbering.'
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    template_ligand_usage: reference_frame_only
+    hydrogen_conditioning_mode: donor_acceptor_locked_tunnel
+    donor_acceptor_priority:
+      preferred_entrance_segment:
+      - H:24-36
+      preferred_bottom_segment:
+      - H:120
+  ligand_mpnn:
+    design_positions:
+    - H:4
+    - H:6
+    - H:24-26
+    - H:28-32
+    - H:34
+    - H:36
+    contact_tuning_positions:
+    - H:4
+    - H:6
+    - H:24-26
+    - H:28-32
+    - H:34
+    - H:36
+    topology_holding_positions:
+    - H:74-81
+    - H:100
+    - H:120
+    secondary_release_positions:
+    - H:98
+    secondary_release_fraction: 0.125
+    optional_context_positions:
+    - H:98
+    fixed_positions:
+    - H:5
+    - H:7-23
+    - H:27
+    - H:33
+    - H:35
+    - H:37-73
+    - H:74-81
+    - H:82-100
+    - H:99
+    - H:101-113
+    - H:119-120
+    - H:120
+    - H:121-131
+    notes: 'Topology-retention mode: first design only the entry-lip contact-tuning layer. The shaft, roof buttress, and bottom stop remain fixed during LigandMPNN; only a minimal shoulder residue may be released in a secondary pass.'
+    selection_numbering: pdb_author
+  rf3:
+    template_selection:
+    - H:5
+    - H:7-23
+    - H:27
+    - H:33
+    - H:35
+    - H:37-73
+    - H:77-78
+    - H:82-99
+    - H:101-113
+    - H:119
+    - H:121-131
+    ligand_reference_pdb: tunnel_cdr1_cdr3_fr1_3QXV_holo_ref_H.pdb
+    ground_truth_conformer_selection: MTX
+    notes: Use the cleaned holo reference to provide the ligand conformer. Keep all template selections in pdb_author numbering.
+    selection_numbering: pdb_author
+    ligand_source_policy: truth_state_to_stage_model_view
+    complex_input_mode: direct_complex_preferred
+    fallback_mode: protein_only_then_truth_ligand_backprojection
+    sanity_gate:
+      drop_failed_designs: true
+      fail_job_only_if_all_designs_drop: true
+      thresholds:
+        internal_conformer_rmsd: 1.25
+        ligand_drift_rmsd: 5.0
+        min_protein_ligand_distance: 7.5
+        contact_count_within_5A: 2
+        ligand_centroid_drift_A: 3.5
+        ligand_axis_angle_drift_deg: 40.0
+        ligand_buried_fraction_min: 0.68
+        min_contacts_with_entry_lip: 2
+        min_contacts_with_roof_buttress: 2
+        min_contacts_with_shaft: 2
+        min_contacts_with_bottom_stop: 1
+      metric_policies:
+        internal_conformer_rmsd: warn
+        ligand_drift_rmsd: warn
+        min_protein_ligand_distance: drop
+        contact_count_within_5A: drop
+        ligand_centroid_drift_A: drop
+        ligand_axis_angle_drift_deg: drop
+        ligand_buried_fraction_min: drop_if_below
+        min_contacts_with_entry_lip: drop_if_below
+        min_contacts_with_roof_buttress: drop_if_below
+        min_contacts_with_shaft: drop_if_below
+        min_contacts_with_bottom_stop: drop_if_below
+      state_policies:
+        target: drop
+        analog: warn
+        decoy: warn
+        apo: ignore
+      segment_contact_sets:
+        entry_lip:
+        - H:4
+        - H:6
+        - H:24-36
+        shaft:
+        - H:74-81
+        roof_buttress:
+        - H:74-81
+        - H:120
+        bottom_stop:
+        - H:120
+  rfantibody:
+    supported: true
+    requires_chothia_hlt_conversion: true
+    notes: Generate an on-demand Chothia map from the cleaned framework PDB, emit a Chothia-numbered framework PDB, and then convert it to HLT remarks for RFantibody. Do not reinterpret pdb_author selections as Chothia without an explicit mapping step.
+    input_numbering_required: Chothia_annotated_PDB
+    source_framework_before_conversion: tunnel_cdr1_cdr3_fr1_framework_v1.pdb
+notes: 'V4 topology-first interpretation: use this profile for elongated ligands that enter beneath the CDR1/FR1 front rim and travel through a roofed tunnel maintained by a CDR3-adjacent or NHV-like buttress. This mode should remain a canopy-style shaft, not a shallow bowl or a side-open groove.'
+topology:
+  topology_class: tunnel
+  topology_subtype: under_cdr1_canopy_tunnel
+  openness_model:
+    open_faces_expected_max: 1
+    side_open_allowed: false
+    roof_or_lid_required: true
+    backwall_required: false
+  anisotropy_model:
+    elongated_axis_required: true
+    radial_enclosure_required: false
+    surface_parallel_pose_preferred: false
+    inter_sheet_slit_required: false
+  required_segments:
+  - entry_lip
+  - entry_shoulder
+  - shaft
+  - roof_buttress
+  - bottom_stop
+  role_segments:
+    entry_lip:
+    - H:24-36
+    entry_shoulder:
+    - H:4
+    - H:6
+    shaft:
+    - H:74-81
+    roof_buttress:
+    - H:74-81
+    - H:120
+    bottom_stop:
+    - H:120
+  required_structural_roles:
+  - entry_lip
+  - shaft
+  - roof_buttress
+  - bottom_stop
+  canonical_pose_description: Ligand enters beneath the CDR1/FR1 front rim and traverses a roofed shaft, with a buttressed canopy above and a defined deep stop.
+filter_grammar:
+  primary_decision_axis: retain_roofed_tunnel_topology
+  metric_semantics:
+    min_protein_ligand_distance: drop_if_above
+    contact_count_within_5A: drop_if_below
+    ligand_buried_fraction_min: drop_if_below
+    ligand_centroid_drift_A: drop_if_above
+    ligand_axis_angle_drift_deg: drop_if_above
+    min_contacts_with_entry_lip: drop_if_below
+    min_contacts_with_roof_buttress: drop_if_below
+    min_contacts_with_shaft: drop_if_below
+    min_contacts_with_bottom_stop: drop_if_below
+  hard_filters:
+  - name: retain_entry_lip_contacts
+    metric: min_contacts_with_entry_lip
+    threshold: 2
+  - name: retain_roof_buttress_contacts
+    metric: min_contacts_with_roof_buttress
+    threshold: 2
+  - name: retain_shaft_contacts
+    metric: min_contacts_with_shaft
+    threshold: 2
+  - name: retain_bottom_stop
+    metric: min_contacts_with_bottom_stop
+    threshold: 1
+  soft_rankers:
+  - name: prefer_lower_axis_drift
+    metric: ligand_axis_angle_drift_deg
+    direction: lower_is_better
+  - name: prefer_higher_burial_within_range
+    metric: contact_count_within_5A
+    direction: higher_is_better
+  reject_patterns:
+  - surface_parallel_pose
+  - wide_open_bowl_pose
+  - lost_roof_buttress
